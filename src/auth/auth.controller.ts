@@ -18,20 +18,20 @@ export class AuthController {
 
   ) { }
 
-  @Post('register')
+  @Post('register')   //admin registering users
   async register(@Body() createuserDto: CreateUserDto, @Res() res: Response) {
     const result = await this.authService.create(createuserDto);
     return res.status(result.status).json(result)
   }
 
 
-  @Post('login')
+  @Post('login') //login user
   async login(@Body() logindto: LoginDto, @Res() res: Response) {
     const user = await this.authService.login(logindto);
     return res.status(user.status).json(user);
   }
 
-  @Post('loginadmin')
+  @Post('loginadmin') //login admins
   async loginforadmin(@Body() logindto: LoginDto, @Res() res: Response) {
     const user = await this.authService.loginforadmin(logindto);
     return res.status(user.status).json(user);

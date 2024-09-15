@@ -1,8 +1,10 @@
 enum Role {
+
     Admin = 'admin',
     User = 'user',
     Staff = 'staff',
-    Party = 'party'
+    Party = 'party',
+    Trustee = 'trustee'
 }
 
 export default Role

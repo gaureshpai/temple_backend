@@ -21,6 +21,47 @@ export class AuthService {
     @InjectRepository(Users) private usersRepository: Repository<Users>,
   ) { }
 
+
+  async create(createuserDto: CreateUserDto) {
+    try {
+      let checkuser1 = await this.usersRepository.findOne({
+        where: [
+          { email: createuserDto.email }
+        ],
+      });
+      let checkuser2 = await this.usersRepository.findOne({
+        where: [
+          { phone_number: createuserDto.phone_number }
+        ],
+      });
+      if (checkuser1) {
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          message: 'Email Already Exist Please Select a different Email',
+        };
+      }
+      if (checkuser2) {
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          message: 'Mobile Number Already Exist Please Select a different number',
+        };
+      }
+      if (createuserDto.role) {
+        if (!Object.values(Role).includes(createuserDto.role)) {
+          return {
+            status: HttpStatus.BAD_REQUEST,
+            message: 'Role Does Not Exist Please select a Valid Role',
+          };
+        }
+      }
+      createuserDto.password = await bcrypt.hash(createuserDto.password, 10);
+      let saveduser = await this.usersRepository.save(createuserDto);
+      return { status: HttpStatus.OK, user: saveduser };
+    } catch (err) {
+      return { status: HttpStatus.BAD_REQUEST, error: err.message };
+    }
+  }
+
   async login(logindto: LoginDto) {
     try {
       const user = await this.userService.findByEmail(logindto.email);
@@ -34,7 +75,6 @@ export class AuthService {
             const access_token = this.jwtService.sign(payload);
             return {
               status: HttpStatus.OK,
-              user: user,
               access_token: access_token,
             };
           } else {
@@ -51,7 +91,6 @@ export class AuthService {
             const access_token = this.jwtService.sign(payload);
             return {
               status: HttpStatus.OK,
-              user: user,
               access_token: access_token
             };
           } else {
@@ -93,7 +132,6 @@ export class AuthService {
           const access_token = this.jwtService.sign(payload);
           return {
             status: HttpStatus.OK,
-            user: user,
             access_token: access_token
           };
         } else {
@@ -108,45 +146,6 @@ export class AuthService {
     }
   }
 
-  async create(createuserDto: CreateUserDto) {
-    try {
-      let checkuser1 = await this.usersRepository.findOne({
-        where: [
-          { email: createuserDto.email }
-        ],
-      });
-      let checkuser2 = await this.usersRepository.findOne({
-        where: [
-          { phone_number: createuserDto.phone_number }
-        ],
-      });
-      if (checkuser1) {
-        return {
-          status: HttpStatus.BAD_REQUEST,
-          message: 'Email Already Exist Please Select a different Email',
-        };
-      }
-      if (checkuser2) {
-        return {
-          status: HttpStatus.BAD_REQUEST,
-          message: 'Mobile Number Already Exist Please Select a different number',
-        };
-      }
-      if (createuserDto.role) {
-        if (!Object.values(Role).includes(createuserDto.role)) {
-          return {
-            status: HttpStatus.BAD_REQUEST,
-            message: 'Role Does Not Exist Please select a Valid Role',
-          };
-        }
-      }
-      createuserDto.password = await bcrypt.hash(createuserDto.password, 10);
-      let saveduser = await this.usersRepository.save(createuserDto);
-      return { status: HttpStatus.OK, user: saveduser };
-    } catch (err) {
-      return { status: HttpStatus.BAD_REQUEST, error: err.message };
-    }
-  }
 
   async validateUser(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
