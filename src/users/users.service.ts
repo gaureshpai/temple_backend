@@ -66,7 +66,7 @@ export class UsersService {
     try {
       const user = await this.usersRepository.findOne({ where: { id, user_status: true } })
       if (!user) {
-        return { status: HttpStatus.OK, message: "User Not Exists" };
+        return { status: HttpStatus.BAD_REQUEST, message: "User Not Exists" };
       }
       return { status: HttpStatus.OK, users: user };
     }
