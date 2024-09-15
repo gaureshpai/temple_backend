@@ -37,20 +37,20 @@ export class AuthService {
       if (checkuser1) {
         return {
           status: HttpStatus.BAD_REQUEST,
-          message: 'Email Already Exist Please Select a different Email',
+          message: 'Email Already Exists for a different Account Please Select a different Email',
         };
       }
       if (checkuser2) {
         return {
           status: HttpStatus.BAD_REQUEST,
-          message: 'Mobile Number Already Exist Please Select a different number',
+          message: 'Mobile Number Already Exists for a different account Please Select a different number',
         };
       }
       if (createuserDto.role) {
         if (!Object.values(Role).includes(createuserDto.role)) {
           return {
             status: HttpStatus.BAD_REQUEST,
-            message: 'Role Does Not Exist Please select a Valid Role',
+            message: 'Role Does Not Exists Please select a Valid Role',
           };
         }
       }

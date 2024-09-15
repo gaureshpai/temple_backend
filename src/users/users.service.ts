@@ -21,7 +21,7 @@ export class UsersService {
       if (user.role == Role.Party || user.role == Role.User) {
         return { status: HttpStatus.OK, message: "Not Registered as Admin" };
       }
-      let users = await this.usersRepository.find({ where: { role: Role.User }, order: { created_at: 'DESC' } });
+      let users = await this.usersRepository.find({ where: { role: Role.User, user_status: true }, order: { created_at: 'DESC' } });
       return { status: HttpStatus.OK, users: users };
     }
     catch (err) {
@@ -62,24 +62,61 @@ export class UsersService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    try {
+      const user = await this.usersRepository.findOne({ where: { id, user_status: true } })
+      if (!user) {
+        return { status: HttpStatus.OK, message: "User Not Exists" };
+      }
+      return { status: HttpStatus.OK, users: user };
+    }
+    catch (err) {
+      return { status: HttpStatus.BAD_REQUEST, error: err.message };
+    }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    try {
+      let user = await this.usersRepository.findOne({ where: { id, user_status: true } })
+      if (!user) {
+        return { status: HttpStatus.BAD_REQUEST, message: "User Not Found" };
+      }
+      if (updateUserDto.password) {
+        updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+      }
+      Object.assign(user, updateUserDto)
+      const result = await this.usersRepository.save(user)
+      return { "status": HttpStatus.OK, ...result }
+    }
+    catch (err) {
+      return { status: HttpStatus.BAD_REQUEST, error: err.message };
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    try {
+
+      let existing_user = await this.usersRepository.findOne({ where: { id, user_status: true } })
+
+      if (!existing_user) {
+        return { status: HttpStatus.BAD_REQUEST, message: "User Not Found" };
+      }
+      existing_user.user_status = false
+      let result = await this.usersRepository.save(existing_user)
+      return { "status": HttpStatus.OK, "Deleted": result }
+
+    }
+    catch (err) {
+      return { status: HttpStatus.BAD_REQUEST, error: err.message };
+    }
   }
 
   async findByEmail(email: string) {
-    return this.usersRepository.findOne({ where: { email } });
+    return this.usersRepository.findOne({ where: { email, user_status: true } });
   }
 
   async findByMobile(phone_number: string) {
-    return this.usersRepository.findOne({ where: { phone_number } });
+    return this.usersRepository.findOne({ where: { phone_number, user_status: true } });
   }
 
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UseGuards, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UseGuards, Headers, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -22,18 +22,21 @@ export class UsersController {
     return res.status(result.status).json(result)
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @Get('get-user-by-id')
+  async findOne(@Query('user_id') id: number, @Res() res: Response) {
+    const result = await this.usersService.findOne(id);
+    return res.status(result.status).json(result)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Patch('update-user-details')
+  async update(@Query('user_id') id: number, @Body() updateUserDto: UpdateUserDto, @Res() res: Response) {
+    const result = await this.usersService.update(id, updateUserDto);
+    return res.status(result.status).json(result)
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @Delete('delete-user')
+  async remove(@Query('id') id: number, @Res() res: Response) {
+    const result = await this.usersService.remove(id);
+    return res.status(result.status).json(result)
   }
 }
