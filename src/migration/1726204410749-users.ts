@@ -6,14 +6,14 @@ export class Users1726204410749 implements MigrationInterface {
     await queryRunner.query(`
             CREATE TABLE users (
               id INT PRIMARY KEY AUTO_INCREMENT,
-              name VARCHAR(255) NOT NULL,
-              email VARCHAR(255) UNIQUE NOT NULL,
-              password VARCHAR(255) NOT NULL,
+              name VARCHAR(255),
+              email VARCHAR(255) UNIQUE,
+              password VARCHAR(255),
               phone_number VARCHAR(15),
-              role  VARCHAR(255) NOT NULL DEFAULT 'user',
-              user_status tinyint NOT NULL DEFAULT 1,
+              role  VARCHAR(255) DEFAULT 'user',
+              user_status tinyint DEFAULT 1,
               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-              updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+              updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             );
           `);
 

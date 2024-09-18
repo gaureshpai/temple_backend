@@ -9,14 +9,14 @@ import { Response } from 'express';
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-  @Post('register-user')   //user onboarding self
+  @Post('register-user')   //staff onboarding self
   async registerUser(@Body() createuserDto: CreateUserDto, @Res() res: Response) {
     const result = await this.usersService.registerUser(createuserDto);
     return res.status(result.status).json(result)
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('get-all-users')   //get all users for admin
+  @Get('get-all-users')   //get all staff for admin
   async findAlluser(@Headers() header, @Res() res: Response) {
     const result = await this.usersService.findAll(header.user.id);
     return res.status(result.status).json(result)
@@ -28,13 +28,13 @@ export class UsersController {
     return res.status(result.status).json(result)
   }
 
-  @Patch('update-user-details')
+  @Patch('update-user-details') //update staff details
   async update(@Query('user_id') id: number, @Body() updateUserDto: UpdateUserDto, @Res() res: Response) {
     const result = await this.usersService.update(id, updateUserDto);
     return res.status(result.status).json(result)
   }
 
-  @Delete('delete-user')
+  @Delete('delete-user') //delete staff
   async remove(@Query('id') id: number, @Res() res: Response) {
     const result = await this.usersService.remove(id);
     return res.status(result.status).json(result)
